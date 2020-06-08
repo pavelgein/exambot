@@ -11,7 +11,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"github.com/pavelgein/exambot/internal/config"
-	"github.com/pavelgein/exambot/internal/db_helpers"
 	"github.com/pavelgein/exambot/models"
 )
 
@@ -95,48 +94,36 @@ func GetTask(db *gorm.DB, item *InputTask) models.Task {
 }
 
 func GetUser(db *gorm.DB, item *InputItem) models.User {
-	user := models.User{
+	var user models.User
+	db.FirstOrCreate(&user, models.User{
 		Name:    item.Name,
 		Surname: item.Surname,
 		Group:   item.Group,
-	}
+	})
 
-	created, err := db_helpers.GetOrCreate(db, &user)
-	if err != nil {
-		log.Panicf("error in getting user %s", err.Error())
-	}
-
-	if created {
-		log.Printf("created user %s %s %s", user.Name, user.Surname, user.Group)
-	}
-
-	tguser := models.TelegramUser{
-		Login: item.Login,
-		User:  user,
-	}
-
-	if err := db.Model(&user).Where("Login = ?", item.Login).Related(&tguser).Error; err != nil {
+	var tguser models.TelegramUser
+	if res := db.Model(&user).Related(&tguser).Take(&tguser); res.Error == nil {
+		log.Printf("found login: %s", tguser.Login)
+		if tguser.Login != item.Login {
+			log.Panic("wrong login")
+		}
+	} else if res.RecordNotFound() {
+		log.Printf("create user")
+		tguser.Login = item.Login
+		tguser.User = user
 		db.NewRecord(&tguser)
 		db.Create(&tguser)
-		log.Printf("created tguser %s", tguser.Login)
 	}
 
 	return user
 }
 
 func GetCourse(db *gorm.DB, item *InputItem) models.Course {
-	course := models.Course{
+	var course models.Course
+	log.Printf("course %s", item.Course)
+	db.FirstOrCreate(&course, models.Course{
 		Name: item.Course,
-	}
-
-	created, err := db_helpers.GetOrCreate(db, &course)
-	if err != nil {
-		log.Panicf("can nont fetch course %s", err.Error())
-	}
-
-	if created {
-		log.Printf("created course %s", item.Course)
-	}
+	})
 
 	return course
 }
@@ -178,11 +165,11 @@ func InsertAssignments(db *gorm.DB, sourceFile string) {
 }
 
 func InsertTask(db *gorm.DB, task *InputTask) {
-	taskSet := models.TaskSet{
-		Name: task.TaskSet,
-	}
+	var taskSet models.TaskSet
 
-	db_helpers.GetOrCreate(db, &taskSet)
+	db.FirstOrCreate(&taskSet, models.TaskSet{
+		Name: task.TaskSet,
+	})
 
 	taskModel := models.Task{
 		TaskSet: taskSet,
