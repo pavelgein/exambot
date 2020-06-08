@@ -156,7 +156,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	db, err := gorm.Open(config.DBDialect, config.DBConnectionParams)
+	db, err := gorm.Open(config.DBConfig.Dialect, config.DBConfig.ConnectionParams)
 	if err != nil {
 		log.Printf("error: %s", err.Error())
 		panic("failed to connect to database")
