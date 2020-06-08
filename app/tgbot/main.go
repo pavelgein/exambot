@@ -194,7 +194,7 @@ func main() {
 	}
 	defer db.Close()
 
-	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{})
+	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{}, &models.TaskSet{})
 	taskSystem := services.FullAssignmentService{DB: db}
 
 	bot.Debug = true

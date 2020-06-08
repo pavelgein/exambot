@@ -6,6 +6,7 @@ type User struct {
 	gorm.Model
 	Name    string
 	Surname string
+	Group   string
 }
 
 type TelegramUser struct {

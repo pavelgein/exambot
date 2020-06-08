@@ -6,10 +6,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type TaskSet struct {
+	gorm.Model
+	Name string
+}
+
 type Task struct {
 	gorm.Model
-	Number  uint64
-	Content string
+	Number    uint64
+	Content   string
+	TaskSetID int
+	TaskSet   TaskSet
 }
 
 type Course struct {
