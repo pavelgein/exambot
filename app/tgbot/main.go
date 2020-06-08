@@ -158,6 +158,7 @@ func main() {
 
 	db, err := gorm.Open(config.DBDialect, config.DBConnectionParams)
 	if err != nil {
+		log.Printf("error: %s", err.Error())
 		panic("failed to connect to database")
 	}
 	defer db.Close()
