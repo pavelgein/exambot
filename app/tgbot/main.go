@@ -107,28 +107,59 @@ func (bot *Bot) Serve() {
 	}
 }
 
-func (bot *Bot) ServeUpdate(update tgbotapi.Update) {
-	if update.Message == nil { // ignore any non-Message Updates
-		return
-	}
-
-	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-
+func (bot *Bot) ServeTask(update *tgbotapi.Update) {
 	user := bot.UserProvider.GetUser(update.Message.From.UserName)
 	if user == nil {
-		bot.SendUserNotFound(&update)
+		bot.SendUserNotFound(update)
 		return
 	}
 
 	assigment := bot.AssignmentService.GetAssignment(user)
 	if assigment == nil {
-		bot.SendAssignmentNotFound(&update)
+		bot.SendAssignmentNotFound(update)
 		return
 	}
 
 	now := time.Now()
 	bot.AssignmentService.Assign(assigment, &now)
-	bot.SendAssignment(&update, assigment)
+	bot.SendAssignment(update, assigment)
+}
+
+func (bot *Bot) ServeHelp(update *tgbotapi.Update) {
+	bot.replyTo(update, "/task для получения задачи")
+}
+
+func (bot *Bot) ServeUnknownCommand(update *tgbotapi.Update) {
+	bot.replyTo(update, "/help для справки")
+}
+
+func (bot *Bot) ServeCommand(update *tgbotapi.Update, command string) {
+	if command == "task" {
+		bot.ServeTask(update)
+		return
+	}
+
+	if command == "help" {
+		bot.ServeHelp(update)
+		return
+	}
+
+	bot.ServeUnknownCommand(update)
+}
+
+func (bot *Bot) ServeUpdate(update tgbotapi.Update) {
+	if update.Message == nil { // ignore any non-Message Updates
+		return
+	}
+
+	if command := update.Message.Command(); command != "" {
+		log.Printf("recieve command %s", command)
+		bot.ServeCommand(&update, command)
+		return
+	}
+
+	log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+	bot.replyTo(&update, "К сожалению, я понимаю только комманды. /help для справки")
 }
 
 func (bot *Bot) SendUserNotFound(update *tgbotapi.Update) {
