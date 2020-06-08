@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+    tgbot:
+        build:
+            dockerfile: docker/tgbot.dockerfile
+            args:
+                src_dir: .
+            context: .
+        volumes:
+            - ${EXAMBOT_DB_DIR}:/db
+        environment:
+            - EXAMBOT_CONN_PARAMS=/db/test.db
+        env_file:
+            - secret.env
