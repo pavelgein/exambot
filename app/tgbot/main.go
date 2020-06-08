@@ -13,62 +13,62 @@ import (
 	"github.com/pavelgein/exambot/services"
 )
 
-// func ensureUser(db *gorm.DB, userName string) {
-// 	var user models.User
-// 	if err := db.Find(&user, "Name = ?", userName).Error; err != nil {
-// 		log.Printf("creating user %s", userName)
-// 		user.Name = userName
-// 		db.NewRecord(&user)
-// 		db.Create(&user)
-// 	} else {
-// 		log.Printf("User %s has id %d", userName, user.ID)
-// 	}
+func ensureUser(db *gorm.DB, userName string) {
+	var user models.User
+	if err := db.Find(&user, "Name = ?", userName).Error; err != nil {
+		log.Printf("creating user %s", userName)
+		user.Name = userName
+		db.NewRecord(&user)
+		db.Create(&user)
+	} else {
+		log.Printf("User %s has id %d", userName, user.ID)
+	}
 
-// 	var telegramUser models.TelegramUser
-// 	if err := db.First(&telegramUser, "Login = ?", userName).Error; err != nil {
-// 		log.Printf("creating telegram user %s", userName)
-// 		telegramUser.Login = userName
-// 		telegramUser.User = user
-// 		db.NewRecord(&telegramUser)
-// 		db.Create(&telegramUser)
-// 	} else {
-// 		log.Printf("telegramUser %s has id %d", userName, telegramUser.ID)
-// 	}
+	var telegramUser models.TelegramUser
+	if err := db.First(&telegramUser, "Login = ?", userName).Error; err != nil {
+		log.Printf("creating telegram user %s", userName)
+		telegramUser.Login = userName
+		telegramUser.User = user
+		db.NewRecord(&telegramUser)
+		db.Create(&telegramUser)
+	} else {
+		log.Printf("telegramUser %s has id %d", userName, telegramUser.ID)
+	}
 
-// 	courseName := "Алгебра и геометрия"
-// 	var course models.Course
-// 	if err := db.First(&course, "Name = ?", courseName).Error; err != nil {
-// 		log.Printf("creating course")
-// 		course.Name = courseName
-// 		db.NewRecord(&course)
-// 		db.Create(&course)
-// 	} else {
-// 		log.Printf("Course %s has id %d", course.Name, course.ID)
-// 	}
+	courseName := "Алгебра и геометрия"
+	var course models.Course
+	if err := db.First(&course, "Name = ?", courseName).Error; err != nil {
+		log.Printf("creating course")
+		course.Name = courseName
+		db.NewRecord(&course)
+		db.Create(&course)
+	} else {
+		log.Printf("Course %s has id %d", course.Name, course.ID)
+	}
 
-// 	taskContent := "Условие задачи"
-// 	var task models.Task
-// 	if err := db.First(&task, "Content = ?", taskContent).Error; err != nil {
-// 		log.Printf("creating task")
-// 		task.Content = taskContent
-// 		db.NewRecord(&task)
-// 		db.Create(&task)
-// 	} else {
-// 		log.Printf("Task %s has id %d", taskContent, task.ID)
-// 	}
+	taskContent := "Условие задачи"
+	var task models.Task
+	if err := db.First(&task, "Content = ?", taskContent).Error; err != nil {
+		log.Printf("creating task")
+		task.Content = taskContent
+		db.NewRecord(&task)
+		db.Create(&task)
+	} else {
+		log.Printf("Task %s has id %d", taskContent, task.ID)
+	}
 
-// 	var assignment models.Assignment
-// 	if err := db.First(&assignment).Error; err != nil {
-// 		log.Printf("creating assigment")
-// 		assignment.Task = task
-// 		assignment.Course = course
-// 		assignment.User = user
-// 		db.NewRecord(&assignment)
-// 		db.Create(&assignment)
-// 	} else {
-// 		log.Printf("Assignment has id %d, %+v", assignment.ID, assignment)
-// 	}
-// }
+	var assignment models.Assignment
+	if err := db.Model(&assignment).Related(&user).Error; err != nil {
+		log.Printf("creating assigment")
+		assignment.Task = task
+		assignment.Course = course
+		assignment.User = user
+		db.NewRecord(&assignment)
+		db.Create(&assignment)
+	} else {
+		log.Printf("Assignment has id %d, %+v", assignment.ID, assignment)
+	}
+}
 
 type TelegramUserProvider struct {
 	DB *gorm.DB
