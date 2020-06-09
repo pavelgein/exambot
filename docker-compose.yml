@@ -11,5 +11,6 @@ services:
             - ${EXAMBOT_DB_DIR}:/db
         environment:
             - EXAMBOT_CONN_PARAMS=/db/test.db
+            - DEBUG=${DEBUG}
         env_file:
             - secret.env
