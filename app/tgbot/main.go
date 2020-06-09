@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -114,15 +116,16 @@ func (bot *Bot) ServeTask(update *tgbotapi.Update) {
 		return
 	}
 
-	assigment := bot.AssignmentService.GetAssignment(user)
-	if assigment == nil {
+	assignments := bot.AssignmentService.GetAllAssignments(user)
+	if len(assignments) == 0 {
 		bot.SendAssignmentNotFound(update)
 		return
 	}
 
 	now := time.Now()
-	bot.AssignmentService.Assign(assigment, &now)
-	bot.SendAssignment(update, assigment)
+	log.Printf("Need to send %d assignments", len(assignments))
+	bot.AssignmentService.AssignMany(assignments, &now)
+	bot.SendAssignment(update, assignments)
 }
 
 func (bot *Bot) ServeHelp(update *tgbotapi.Update) {
@@ -170,8 +173,16 @@ func (bot *Bot) SendAssignmentNotFound(update *tgbotapi.Update) {
 	bot.replyTo(update, fmt.Sprintf("Для пользователя %s задания не найдены", update.Message.From.UserName))
 }
 
-func (bot *Bot) SendAssignment(update *tgbotapi.Update, assignment *models.Assignment) {
-	bot.replyTo(update, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.ID, assignment.Task.Content))
+func (bot *Bot) SendAssignment(update *tgbotapi.Update, assignments []models.Assignment) {
+	formatted := make([]string, 0)
+
+	for _, assignment := range assignments {
+		formatted = append(formatted, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.ID, assignment.Task.Content))
+	}
+
+	log.Printf("Ready to send %d items", len(formatted))
+
+	bot.replyTo(update, strings.Join(formatted, "\n\n"))
 }
 
 func (bot *Bot) replyTo(update *tgbotapi.Update, payload string) {
@@ -193,6 +204,10 @@ func main() {
 		panic("failed to connect to database")
 	}
 	defer db.Close()
+
+	if os.Getenv("DEBUG") != "" {
+		db = db.Debug()
+	}
 
 	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{}, &models.TaskSet{})
 	taskSystem := services.FullAssignmentService{DB: db}
