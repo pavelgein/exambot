@@ -14,3 +14,19 @@ services:
             - DEBUG=${DEBUG}
         env_file:
             - secret.env
+
+    httpapi:
+        build:
+            dockerfile: docker/httpapi.dockerfile
+            args:
+                src_dir: .
+            context: .
+        volumes:
+            - ${EXAMBOT_DB_DIR}:/db
+        environment:
+            - EXAMBOT_CONN_PARAMS=/db/test.db
+            - DEBUG=${DEBUG}
+            - EXAMBOT_HTTP_ADDRESS=0.0.0.0:12345
+
+        ports:
+            - 12345:12345
