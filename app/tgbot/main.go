@@ -177,7 +177,7 @@ func (bot *Bot) SendAssignment(update *tgbotapi.Update, assignments []models.Ass
 	formatted := make([]string, 0)
 
 	for _, assignment := range assignments {
-		formatted = append(formatted, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.ID, assignment.Task.Content))
+		formatted = append(formatted, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.Number, assignment.Task.Content))
 	}
 
 	log.Printf("Ready to send %d items", len(formatted))
