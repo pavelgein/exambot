@@ -14,6 +14,14 @@ type OAuthMultiPageChecker struct {
 	Salt string
 }
 
+func (checker OAuthMultiPageChecker) RegisterPage(pageName string) (models.Page, error) {
+	page := models.Page{
+		Name: pageName,
+	}
+	res := checker.DB.Where("Name = ?", pageName).FirstOrCreate(&page)
+	return page, res.Error
+}
+
 func (checker OAuthMultiPageChecker) Check(page *models.Page, token string) bool {
 	encrypted := checker.Encrypt(token)
 

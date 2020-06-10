@@ -38,6 +38,32 @@ func TestOAuth(t *testing.T) {
 	otherUser := checker.CreateUser("user2", "token2")
 	checker.GrantPermission(&otherUser, &otherPage)
 
+	t.Run("register page", func(t *testing.T) {
+		newPage, err := checker.RegisterPage("some page")
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+
+		newPage2, err := checker.RegisterPage("some page")
+		if newPage2.ID != newPage.ID {
+			t.Error("expect the same id")
+		}
+
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+
+		localPage, err := checker.RegisterPage("page")
+		if err != nil {
+			t.Errorf("%s", err.Error())
+		}
+
+		if localPage.ID != page.ID {
+			t.Error("expect the same id")
+		}
+
+	})
+
 	t.Run("userGetting", func(t *testing.T) {
 		extractedUser, err := checker.GetUser("user")
 		if err != nil {
