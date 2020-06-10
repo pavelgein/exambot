@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
+	"github.com/pavelgein/exambot/internal/input"
 	"github.com/pavelgein/exambot/models"
 )
 
@@ -75,4 +76,39 @@ func (api *HttpApi) ListAssignments(writer http.ResponseWriter, request *http.Re
 	}
 
 	sendJson(assignments, writer)
+}
+
+func (api *HttpApi) InputTask(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodPost {
+		writer.Write([]byte("Only POST method is allowed"))
+		writer.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	decoder := json.NewDecoder(request.Body)
+	var inputTasks input.InputTasks
+	if err := decoder.Decode(&inputTasks); err != nil {
+		writer.Write([]byte(err.Error()))
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	input.InsertTasks(api.DB, inputTasks)
+}
+
+func (api *HttpApi) InputAssignments(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != http.MethodPost {
+		writer.Write([]byte("Only POST method is allowed"))
+		writer.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	decoder := json.NewDecoder(request.Body)
+	var inputItems input.InputItems
+	if decoder.Decode(&inputItems) != nil {
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	input.Insert(api.DB, inputItems)
 }

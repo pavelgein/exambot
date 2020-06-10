@@ -65,6 +65,9 @@ func main() {
 	router.HandleFunc("/list/tgusers", pages.MakeHandler("list/tgusrs", api.ListTelegramUsers))
 	router.HandleFunc("/list/assignments", pages.MakeHandler("list/assignments", api.ListAssignments))
 
+	router.HandleFunc("/create/tasks", pages.MakeHandler("create/tasks", api.InputTask))
+	router.HandleFunc("/create/assignments", pages.MakeHandler("create/assignments", api.InputAssignments))
+
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         config.Server.Address,
