@@ -28,5 +28,8 @@ services:
             - DEBUG=${DEBUG}
             - EXAMBOT_HTTP_ADDRESS=0.0.0.0:12345
 
+        env_file:
+            - secret.env
+
         ports:
             - 12345:12345
