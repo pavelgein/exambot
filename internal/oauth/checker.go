@@ -31,6 +31,10 @@ func (checker OAuthMultiPageChecker) Check(page *models.Page, token string) bool
 		return false
 	}
 
+	if user.IsSuperuser {
+		return true
+	}
+
 	pageRoles := []models.Role{}
 	err := checker.DB.Set("gorm:auto_preload", true).Model(&user).Related(&pageRoles, "UserID").Error
 	if err != nil {
@@ -50,10 +54,11 @@ func (checker OAuthMultiPageChecker) Encrypt(token string) string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(token+checker.Salt)))
 }
 
-func (checker OAuthMultiPageChecker) CreateUser(name string, token string) models.ApiUser {
+func (checker OAuthMultiPageChecker) CreateUser(name string, token string, superuser bool) models.ApiUser {
 	apiUser := models.ApiUser{
-		Name:  name,
-		Token: checker.Encrypt(token),
+		Name:        name,
+		Token:       checker.Encrypt(token),
+		IsSuperuser: superuser,
 	}
 
 	checker.DB.NewRecord(&apiUser)

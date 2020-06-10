@@ -4,8 +4,9 @@ import "github.com/jinzhu/gorm"
 
 type ApiUser struct {
 	gorm.Model
-	Name  string
-	Token string
+	Name        string
+	Token       string
+	IsSuperuser bool
 }
 
 type Page struct {

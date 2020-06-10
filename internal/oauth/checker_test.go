@@ -34,9 +34,16 @@ func TestOAuth(t *testing.T) {
 	db.Create(&otherPage)
 
 	checker := OAuthMultiPageChecker{DB: db, Salt: "1"}
-	user := checker.CreateUser("user", "token")
-	otherUser := checker.CreateUser("user2", "token2")
+	user := checker.CreateUser("user", "token", false)
+	otherUser := checker.CreateUser("user2", "token2", false)
 	checker.GrantPermission(&otherUser, &otherPage)
+
+	t.Run("test superuser", func(t *testing.T) {
+		checker.CreateUser("root", "wonderful token", true)
+		if !checker.Check(&page, "wonderful token") {
+			t.Error("superuser can do anything!")
+		}
+	})
 
 	t.Run("register page", func(t *testing.T) {
 		newPage, err := checker.RegisterPage("some page")
@@ -61,7 +68,6 @@ func TestOAuth(t *testing.T) {
 		if localPage.ID != page.ID {
 			t.Error("expect the same id")
 		}
-
 	})
 
 	t.Run("userGetting", func(t *testing.T) {
