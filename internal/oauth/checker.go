@@ -107,7 +107,7 @@ func (checker OAuthPageChecker) Check(token string) bool {
 }
 
 func CreatePageChecker(pageName string, parent *OAuthMultiPageChecker) (*OAuthPageChecker, error) {
-	page, err := parent.GetPage(pageName)
+	page, err := parent.RegisterPage(pageName)
 	if err != nil {
 		return nil, err
 	}
