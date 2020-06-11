@@ -18,7 +18,6 @@ RUN cp /build/granter ./granter
 # Optional: in case your application uses dynamic linking (often the case with CGO),
 # this will collect dependent libraries so they're later copied to the final image
 # NOTE: make sure you honor the license terms of the libraries you copy and distribute
-RUN ls
 RUN for p in "httpapi granter" ; do ldd $p | tr -s '[:blank:]' '\n' | grep '^/' | \
     xargs -I % sh -c 'mkdir -p $(dirname ./%); cp % ./%;' ; done
 RUN mkdir -p lib64 && cp /lib64/ld-linux-x86-64.so.2 lib64/
