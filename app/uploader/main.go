@@ -5,12 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-
 	"github.com/pavelgein/exambot/internal/config"
+	"github.com/pavelgein/exambot/internal/db"
 	"github.com/pavelgein/exambot/internal/input"
-	"github.com/pavelgein/exambot/internal/models"
 )
 
 type Mode int
@@ -45,31 +42,22 @@ func MakeConfig() Config {
 	return Config{
 		SourceFile: *sourceFile,
 		Mode:       ModeFromString(*mode),
-		DBConfig: config.DBConfig{
-			Dialect:          config.GetEnvWithDefault("EXAMBOT_DB_DIALECT", "sqlite3"),
-			ConnectionParams: config.GetEnvWithDefault("EXAMBOT_CONN_PARAMS", "test.db"),
-		},
+		DBConfig:   db.CreateConfigFromEnvironment(),
 	}
 }
 
 func main() {
 	config := MakeConfig()
 
-	db, err := gorm.Open(config.DBConfig.Dialect, config.DBConfig.ConnectionParams)
+	db, err := db.InitWithMigrations(&config.DBConfig)
 	if err != nil {
 		log.Panicf("can not open database: %s", err.Error())
 	}
+	defer db.Close()
 
 	if os.Getenv("DEBUG") != "" {
 		db = db.Debug()
 	}
-
-	db.AutoMigrate(&models.Assignment{})
-	db.AutoMigrate(&models.Task{})
-	db.AutoMigrate(&models.TaskSet{})
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.TelegramUser{})
-	db.AutoMigrate(&models.Course{})
 
 	if config.Mode == Assignments {
 		input.InsertAssignments(db, config.SourceFile)

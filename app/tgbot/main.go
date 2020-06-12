@@ -9,8 +9,8 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
+	"github.com/pavelgein/exambot/internal/db"
 	"github.com/pavelgein/exambot/internal/models"
 	"github.com/pavelgein/exambot/services"
 )
@@ -198,7 +198,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	db, err := gorm.Open(config.DBConfig.Dialect, config.DBConfig.ConnectionParams)
+	db, err := db.InitWithMigrations(&config.DBConfig)
 	if err != nil {
 		log.Printf("error: %s", err.Error())
 		panic("failed to connect to database")
@@ -209,7 +209,6 @@ func main() {
 		db = db.Debug()
 	}
 
-	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{}, &models.TaskSet{})
 	taskSystem := services.FullAssignmentService{DB: db}
 
 	bot.Debug = true

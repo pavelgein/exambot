@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/mkideal/cli"
 	"github.com/pavelgein/exambot/internal/db"
-	"github.com/pavelgein/exambot/internal/models"
 	"github.com/pavelgein/exambot/internal/oauth"
 )
 
@@ -44,14 +42,12 @@ func Grant(checker *oauth.OAuthMultiPageChecker, options *GrantOptions) error {
 }
 
 func main() {
-	db, err := db.CreateDBFromEnvironment()
+	dbConfig := db.CreateConfigFromEnvironment()
+	db, err := db.InitWithMigrations(&dbConfig)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-
-	db.AutoMigrate(&models.ApiUser{}, &models.Page{}, &models.Role{})
-	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{}, &models.TaskSet{})
 
 	checker := oauth.OAuthMultiPageChecker{
 		DB:   db,

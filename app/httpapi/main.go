@@ -6,10 +6,8 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"github.com/pavelgein/exambot/internal/models"
+	"github.com/pavelgein/exambot/internal/db"
 	"github.com/pavelgein/exambot/internal/oauth"
 	"github.com/pavelgein/exambot/packages/httpapi"
 )
@@ -34,14 +32,11 @@ func (pages *ProtectedPages) MakeHandler(pageName string, handler http.HandlerFu
 func main() {
 	config := CreateConfigFromEnv()
 
-	db, err := gorm.Open(config.DB.Dialect, config.DB.ConnectionParams)
+	db, err := db.InitWithMigrations(&config.DB)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
-
-	db.AutoMigrate(&models.ApiUser{}, &models.Page{}, &models.Role{})
-	db.AutoMigrate(&models.Task{}, &models.Assignment{}, &models.Course{}, &models.User{}, &models.TelegramUser{}, &models.TaskSet{})
 
 	checker := oauth.OAuthMultiPageChecker{
 		DB:   db,
