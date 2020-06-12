@@ -12,7 +12,7 @@ import (
 
 	"github.com/pavelgein/exambot/internal/db"
 	"github.com/pavelgein/exambot/internal/models"
-	"github.com/pavelgein/exambot/services"
+	"github.com/pavelgein/exambot/internal/services"
 )
 
 func ensureUser(db *gorm.DB, userName string) {
