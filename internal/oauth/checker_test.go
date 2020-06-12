@@ -5,7 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/pavelgein/exambot/models"
+	"github.com/pavelgein/exambot/internal/models"
 )
 
 func TestOAuth(t *testing.T) {

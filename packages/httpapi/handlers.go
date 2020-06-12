@@ -7,7 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/pavelgein/exambot/internal/input"
-	"github.com/pavelgein/exambot/models"
+	"github.com/pavelgein/exambot/internal/models"
 )
 
 type HttpApi struct {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/pavelgein/exambot/internal/config"
 	"github.com/pavelgein/exambot/internal/input"
-	"github.com/pavelgein/exambot/models"
+	"github.com/pavelgein/exambot/internal/models"
 )
 
 type Mode int

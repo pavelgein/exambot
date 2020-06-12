@@ -9,8 +9,8 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
+	"github.com/pavelgein/exambot/internal/models"
 	"github.com/pavelgein/exambot/internal/oauth"
-	"github.com/pavelgein/exambot/models"
 	"github.com/pavelgein/exambot/packages/httpapi"
 )
 

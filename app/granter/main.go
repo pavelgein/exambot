@@ -7,8 +7,8 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/mkideal/cli"
 	"github.com/pavelgein/exambot/internal/db"
+	"github.com/pavelgein/exambot/internal/models"
 	"github.com/pavelgein/exambot/internal/oauth"
-	"github.com/pavelgein/exambot/models"
 )
 
 type UserOptions struct {
