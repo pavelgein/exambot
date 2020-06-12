@@ -15,17 +15,6 @@ type AssignmentService interface {
 	AssignMany(assignments []models.Assignment, timestamp *time.Time)
 }
 
-type SimpleAssignmentService struct {
-}
-
-func (SimpleAssignmentService) GetAssignment(user *models.User) *models.Assignment {
-	return &models.Assignment{Task: models.Task{Content: user.Name}}
-}
-
-func (SimpleAssignmentService) Assign(assignment *models.Assignment, timestamp *time.Time) {
-
-}
-
 type FullAssignmentService struct {
 	DB *gorm.DB
 }
