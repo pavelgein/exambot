@@ -1,0 +1,9 @@
+language: go
+
+go:
+    - 1.14.x
+    - master
+
+script:
+    - go mod download
+    - go test ./...
