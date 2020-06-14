@@ -10,7 +10,7 @@ type OAuthChecker interface {
 }
 
 type OAuthMiddleware struct {
-	Checker OAuthChecker;
+	Checker OAuthChecker
 }
 
 func (middleware *OAuthMiddleware) Wrap(f func(http.ResponseWriter, *http.Request)) func(http.ResponseWriter, *http.Request) {
