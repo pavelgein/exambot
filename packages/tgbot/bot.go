@@ -97,7 +97,7 @@ func (bot *Bot) SendAssignmentNotFound(update *tgbotapi.Update) {
 }
 
 func (bot *Bot) SendAssignment(update *tgbotapi.Update, assignments []models.Assignment) {
-	formatted := make([]string, 0)
+	formatted := make([]string, 0, len(assignments))
 
 	for _, assignment := range assignments {
 		formatted = append(formatted, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.Number, assignment.Task.Content))
