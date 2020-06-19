@@ -56,8 +56,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/ping", api.PingHanlder)
 	router.HandleFunc("/list/users", pages.MakeHandler("list/users", api.ListUsers))
-	router.HandleFunc("/list/tasks", pages.MakeHandler("list/takss", api.ListTasks))
-	router.HandleFunc("/list/tgusers", pages.MakeHandler("list/tgusrs", api.ListTelegramUsers))
+	router.HandleFunc("/list/tasks", pages.MakeHandler("list/tasks", api.ListTasks))
+	router.HandleFunc("/list/tgusers", pages.MakeHandler("list/tgusers", api.ListTelegramUsers))
 	router.HandleFunc("/list/assignments", pages.MakeHandler("list/assignments", api.ListAssignments))
 
 	router.HandleFunc("/create/tasks", pages.MakeHandler("create/tasks", api.InputTask))
