@@ -105,7 +105,8 @@ func (api *HttpApi) InputAssignments(writer http.ResponseWriter, request *http.R
 
 	decoder := json.NewDecoder(request.Body)
 	var inputItems input.InputItems
-	if decoder.Decode(&inputItems) != nil {
+	if err := decoder.Decode(&inputItems); err != nil {
+		writer.Write([]byte(err.Error()))
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
