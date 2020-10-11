@@ -9,9 +9,9 @@ import (
 )
 
 type AssignmentService interface {
-	GetAssignment(user *models.User) *models.Assignment
+	GetAssignment(user *models.User, now *time.Time) *models.Assignment
 	Assign(assignment *models.Assignment, timestamp *time.Time)
-	GetAllAssignments(user *models.User) []models.Assignment
+	GetAllAssignments(user *models.User, now *time.Time) []models.Assignment
 	AssignMany(assignments []models.Assignment, timestamp *time.Time)
 }
 
@@ -19,9 +19,9 @@ type FullAssignmentService struct {
 	DB *gorm.DB
 }
 
-func (service FullAssignmentService) GetAssignment(user *models.User) *models.Assignment {
+func (service FullAssignmentService) GetAssignment(user *models.User, now *time.Time) *models.Assignment {
 	var assignment models.Assignment
-	res := service.DB.Set("gorm:auto_preload", true).Model(&user).Related(&assignment)
+	res := service.DB.Set("gorm:auto_preload", true).Model(&user).Where("(open_at <= ?) AND (? <= close_at)", now, now).Related(&assignment)
 	if res.Error != nil {
 		log.Printf("nothing is found, %s", res.Error.Error())
 		return nil
@@ -29,9 +29,10 @@ func (service FullAssignmentService) GetAssignment(user *models.User) *models.As
 	return &assignment
 }
 
-func (service FullAssignmentService) GetAllAssignments(user *models.User) []models.Assignment {
+func (service FullAssignmentService) GetAllAssignments(user *models.User, now *time.Time) []models.Assignment {
 	assignments := []models.Assignment{}
-	if err := service.DB.Set("gorm:auto_preload", true).Model(user).Related(&assignments).Error; err != nil {
+	res := service.DB.Set("gorm:auto_preload", true).Model(&user).Where("(open_at <= ?) AND (? <= close_at)", now, now).Related(&assignments)
+	if err := res.Error; err != nil {
 		log.Printf("error: %s", err.Error())
 	}
 

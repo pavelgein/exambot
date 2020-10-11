@@ -33,4 +33,6 @@ type Assignment struct {
 	TaskID     int
 	Task       Task
 	AssignedAt *time.Time
+	OpenAt     *time.Time
+	CloseAt    *time.Time
 }

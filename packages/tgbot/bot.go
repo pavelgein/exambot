@@ -39,7 +39,8 @@ func (bot *Bot) ServeTask(update *tgbotapi.Update) {
 		return
 	}
 
-	assignments := bot.AssignmentService.GetAllAssignments(user)
+	requestTime := time.Unix(int64(update.Message.Date), 0)
+	assignments := bot.AssignmentService.GetAllAssignments(user, &requestTime)
 	if len(assignments) == 0 {
 		bot.SendAssignmentNotFound(update)
 		return
