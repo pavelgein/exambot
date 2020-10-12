@@ -97,11 +97,15 @@ func (bot *Bot) SendAssignmentNotFound(update *tgbotapi.Update) {
 	bot.replyTo(update, fmt.Sprintf("Для пользователя %s задания не найдены", update.Message.From.UserName))
 }
 
+func (bot *Bot) FormatActualTask(assignment *models.Assignment) string {
+	return fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.Number, assignment.Task.Content)
+}
+
 func (bot *Bot) SendAssignment(update *tgbotapi.Update, assignments []models.Assignment) {
 	formatted := make([]string, 0, len(assignments))
 
 	for _, assignment := range assignments {
-		formatted = append(formatted, fmt.Sprintf("Курс: %s\nЗадача №%d\n%s", assignment.Course.Name, assignment.Task.Number, assignment.Task.Content))
+		formatted = append(formatted, bot.FormatActualTask(&assignment))
 	}
 
 	log.Printf("Ready to send %d items", len(formatted))
