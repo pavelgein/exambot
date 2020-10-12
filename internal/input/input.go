@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	"github.com/pavelgein/exambot/internal/models"
@@ -24,6 +25,8 @@ type InputItem struct {
 	Group   string
 	Task    InputTask
 	Course  string
+	OpenAt  int64
+	CloseAt int64
 }
 
 type InputItems []InputItem
@@ -87,10 +90,15 @@ func InsertItem(db *gorm.DB, item *InputItem) {
 	task := GetTask(db, &item.Task)
 	user := GetUser(db, item)
 	course := GetCourse(db, item)
+
+	openAt := time.Unix(item.OpenAt, 0)
+	closeAt := time.Unix(item.CloseAt, 0)
 	assignment := models.Assignment{
-		Task:   task,
-		Course: course,
-		User:   user,
+		Task:    task,
+		Course:  course,
+		User:    user,
+		OpenAt:  &openAt,
+		CloseAt: &closeAt,
 	}
 
 	db.NewRecord(&assignment)
